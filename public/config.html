@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investeer - Détecteur d'Achat Spéculatif</title>
+  <!-- Google Fonts Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Lucide icons premium styling */
+    .icon-inline {
+      width: 1.15em;
+      height: 1.15em;
+      vertical-align: -0.15em;
+      margin-right: 8px;
+      display: inline-block;
+    }
+
+    .logo-icon {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 38px;
+      height: 38px;
+      color: var(--color-primary);
+    }
+
+    .no-alerts-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .no-alerts-icon svg {
+      width: 64px;
+      height: 64px;
+      color: var(--color-text-secondary);
+      opacity: 0.3;
+    }
+
+    [data-lucide="target"] {
+      color: #ff4d5a;
+    }
+
+    [data-lucide="coins"] {
+      color: #ffb703;
+    }
+
+    [data-lucide="calendar"] {
+      color: #1b74b3;
+    }
+
+    [data-lucide="building-2"] {
+      color: #acbfd6;
+    }
+
+    [data-lucide="trending-up"] {
+      color: #00e699;
+    }
+
+    [data-lucide="award"] {
+      color: #ffb703;
+    }
+
+    .email-status svg {
+      width: 1.25em;
+      height: 1.25em;
+      vertical-align: -0.2em;
+      margin-right: 6px;
+    }
+
+    /* Header action navigation button */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      margin: 0 16px;
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary) !important;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-m);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(0, 226, 153, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .header-btn svg {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+    }
+
+    /* Modal styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 11, 20, 0.75);
+      backdrop-filter: blur(12px);
+      display: none;
+      /* starts hidden */
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      background: rgba(10, 22, 38, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-l);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-text-primary);
+    }
+
+    .modal-close-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.95);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Full width configuration stack layout */
+    .config-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+      margin-top: 24px;
+    }
+
+    .config-stack section {
+      width: 100%;
+    }
+
+    .alerts-list {
+      max-height: 480px !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass-bg"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon"><i data-lucide="line-chart"></i></div>
+        <div>
+          <h1>Investeer</h1>
+          <p class="subtitle">Détecteur de Conseils d'Achat Spéculatif</p>
+        </div>
+      </div>
+
+      <!-- Navigation Actions -->
+      <div class="header-actions">
+
+      </div>
+
+      <!-- Status Box & Config Button -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="btn-open-config" class="header-btn"
+          style="background: rgba(0, 226, 153, 0.1); border-color: rgba(0, 226, 153, 0.2); font-weight: 600;">
+          <i data-lucide="settings" class="icon-inline"></i> Paramètres
+        </button>
+        <div class="status-box glass-panel">
+          <div class="status-indicator">
+            <span class="pulse-dot" id="status-dot"></span>
+            <span id="status-text">Initialisation...</span>
+          </div>
+          <div class="time-stats">
+            <div>Dernier Scan : <span id="last-scan-time">-</span></div>
+            <div>Prochain Scan : <span id="next-scan-time">-</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Full-Width Content Stack -->
+    <main class="config-stack">
+      <!-- 1st: Actions Rapides -->
+      <section class="glass-panel action-section">
+        <h2>Actions Rapides</h2>
+        <div class="action-buttons">
+          <button id="btn-trigger" class="btn btn-primary">
+            <span class="btn-icon"><i data-lucide="zap"></i></span> Déclencher un scan maintenant
+          </button>
+          <button id="btn-test-email" class="btn btn-secondary">
+            <span class="btn-icon"><i data-lucide="send"></i></span> Tester la connexion SMTP
+          </button>
+        </div>
+      </section>
+
+      <!-- 2nd: Logs du Scraper en Direct -->
+      <section class="glass-panel terminal-section">
+        <div class="section-header">
+          <h2>Logs du Scraper en Direct</h2>
+          <button id="btn-clear-logs" class="btn-text">Effacer</button>
+        </div>
+        <div class="terminal-container">
+          <div class="terminal-body" id="terminal-body">
+            <div class="log-line system-line">[SYSTEM CET] En attente de connexion au serveur...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3rd: Alertes "Achat Spéculatif" Envoyées -->
+      <section class="glass-panel alerts-section">
+        <div class="section-header">
+          <h2>Alertes "Achat Spéculatif" Envoyées</h2>
+          <span class="badge" id="matches-badge">0 alertes</span>
+        </div>
+        <div class="alerts-list" id="alerts-list">
+          <div class="no-alerts">
+            <div class="no-alerts-icon"><i data-lucide="search"></i></div>
+            <p>Aucune alerte détectée pour le moment.</p>
+            <span class="hint">Les opportunités d'achat spéculatif apparaîtront ici dès leur publication.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal de Configuration -->
+  <div id="config-modal" class="modal-overlay">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h2>Paramètres de configuration</h2>
+        <button id="btn-close-config" class="modal-close-btn">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <section class="settings-section"
+          style="border: none; background: transparent; padding: 0; box-shadow: none; margin: 0;">
+          <form id="settings-form">
+            <div class="form-group">
+              <h3>Identifiants Investeer</h3>
+              <div class="input-row">
+                <div class="input-field">
+                  <label for="inv-user">Adresse E-mail</label>
+                  <input type="email" id="inv-user" required placeholder="email@gmail.com">
+                </div>
+                <div class="input-field">
+                  <label for="inv-pass">Mot de passe</label>
+                  <input type="password" id="inv-pass" required placeholder="Mot de passe">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <h3>Notification Alertes</h3>
+              <div class="input-field">
+                <label for="email-recipient">E-mail Destinataire</label>
+                <input type="email" id="email-recipient" required placeholder="destinataire@gmail.com">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <h3>Configuration Serveur SMTP (Mail)</h3>
+              <div class="input-row">
+                <div class="input-field width-70">
+                  <label for="smtp-host">Hôte SMTP (ex: smtp.gmail.com)</label>
+                  <input type="text" id="smtp-host" placeholder="smtp.monfournisseur.com">
+                </div>
+                <div class="input-field width-30">
+                  <label for="smtp-port">Port</label>
+                  <input type="number" id="smtp-port" placeholder="587">
+                </div>
+              </div>
+              <div class="input-row">
+                <div class="input-field">
+                  <label for="smtp-user">Utilisateur SMTP</label>
+                  <input type="text" id="smtp-user" placeholder="user@gmail.com">
+                </div>
+                <div class="input-field">
+                  <label for="smtp-pass">Mot de passe SMTP</label>
+                  <input type="password" id="smtp-pass" placeholder="Mot de passe SMTP">
+                </div>
+              </div>
+              <div class="input-row align-center">
+                <div class="input-field width-70">
+                  <label for="smtp-from">Nom d'expéditeur (From)</label>
+                  <input type="text" id="smtp-from" placeholder='Alertes Investeer &lt;user@gmail.com&gt;'>
+                </div>
+                <div class="input-checkbox width-30">
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="smtp-secure">
+                    <span class="checkmark"></span>
+                    SSL / TLS Sécurisé
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-save" id="btn-save-settings">Enregistrer les paramètres</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">Message enregistré !</div>
+
+  <script src="app.js"></script>
+
+  <script>
+    // Modal open/close controls
+    const configModal = document.getElementById('config-modal');
+    const btnOpenConfig = document.getElementById('btn-open-config');
+    const btnCloseConfig = document.getElementById('btn-close-config');
+
+    btnOpenConfig.addEventListener('click', () => {
+      configModal.classList.add('open');
+      lucide.createIcons();
+    });
+
+    btnCloseConfig.addEventListener('click', () => {
+      configModal.classList.remove('open');
+    });
+
+    configModal.addEventListener('click', (e) => {
+      if (e.target === configModal) {
+        configModal.classList.remove('open');
+      }
+    });
+
+    const settingsFormEl = document.getElementById('settings-form');
+    if (settingsFormEl) {
+      settingsFormEl.addEventListener('submit', () => {
+        setTimeout(() => {
+          configModal.classList.remove('open');
+        }, 1000);
+      });
+    }
+  </script>
+</body>
+
+</html>

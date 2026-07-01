@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  investeer:
+    build: .
+    container_name: investeer
+    restart: unless-stopped
+    ports:
+      - "3010:3010"
+    volumes:
+      - ./database:/app/database
+      - ./logs:/app/logs
+    env_file:
+      - .env
