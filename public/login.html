@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investeer - Connexion</title>
+  <!-- Google Fonts Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #041624;
+      font-family: var(--font-main), sans-serif;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(8, 42, 68, 0.45);
+      border: 1px solid rgba(180, 200, 230, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: var(--radius-l);
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-logo {
+      width: 64px;
+      height: 64px;
+      background: rgba(27, 116, 179, 0.15);
+      border: 1px solid rgba(27, 116, 179, 0.3);
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 24px;
+      color: var(--color-primary);
+    }
+
+    .login-logo i {
+      width: 32px;
+      height: 32px;
+    }
+
+    .login-card h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin-bottom: 8px;
+      display: block !important;
+      text-align: center !important;
+    }
+
+    .login-card p {
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      margin-bottom: 32px;
+      text-align: center !important;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i,
+    .input-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-secondary);
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+      transition: color var(--transition-fast);
+    }
+
+    .login-input-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-s);
+      padding: 12px 16px 12px 42px;
+      font-size: 16px;
+      color: var(--color-text-main);
+      outline: none;
+      font-family: var(--font-main);
+      transition: all var(--transition-fast);
+      display: block !important;
+      box-sizing: border-box !important;
+    }
+
+    .login-input-field:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(27, 116, 179, 0.15);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .login-input-field:focus + i,
+    .login-input-field:focus + svg {
+      color: var(--color-primary);
+    }
+
+    .btn-login {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-s);
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: all var(--transition-fast);
+    }
+
+    .btn-login:hover {
+      background: #258cd1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(27, 116, 179, 0.35);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 75, 75, 0.1);
+      border: 1px solid rgba(255, 75, 75, 0.2);
+      color: #ff4b4b;
+      padding: 10px 14px;
+      border-radius: var(--radius-s);
+      font-size: 14px;
+      margin-top: 16px;
+      text-align: left;
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-bg"></div>
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">
+        <i data-lucide="lock"></i>
+      </div>
+      <h2 id="login-title">Accès Protégé</h2>
+      <p id="login-subtitle">Veuillez entrer votre mot de passe pour continuer.</p>
+
+      <form id="login-form">
+        <div class="input-group">
+          <label for="password">Mot de passe</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" class="login-input-field" placeholder="••••••••" required autofocus>
+            <i data-lucide="key"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-login">
+          Se connecter <i data-lucide="arrow-right"></i>
+        </button>
+
+        <div class="error-msg" id="error-box">
+          <i data-lucide="alert-circle" style="flex-shrink: 0; width: 18px; height: 18px;"></i>
+          <span id="error-text">Mot de passe incorrect.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const titleEl = document.getElementById('login-title');
+    const subtitleEl = document.getElementById('login-subtitle');
+
+    if (titleEl) titleEl.textContent = 'Accès Protégé';
+    if (subtitleEl) subtitleEl.textContent = 'Saisissez votre mot de passe pour continuer.';
+
+    const loginForm = document.getElementById('login-form');
+    const passwordInput = document.getElementById('password');
+    const errorBox = document.getElementById('error-box');
+    const errorText = document.getElementById('error-text');
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (errorBox) errorBox.style.display = 'none';
+
+        const password = passwordInput ? passwordInput.value : '';
+
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.href = data.redirect || '/index.html';
+          } else {
+            showError(data.message || 'Mot de passe incorrect.');
+          }
+        } catch (err) {
+          showError('Erreur de communication avec le serveur.');
+        }
+      });
+    }
+
+    function showError(msg) {
+      if (errorText) errorText.textContent = msg;
+      if (errorBox) {
+        errorBox.style.display = 'flex';
+        errorBox.style.animation = 'none';
+        void errorBox.offsetWidth; // trigger reflow
+        errorBox.style.animation = 'shake 0.4s ease-in-out';
+      }
+    }
+
+    // Initialize Lucide icons safely at the end
+    try {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    } catch (e) {
+      console.warn('Lucide icons failed to load:', e);
+    }
+  </script>
+</body>
+</html>

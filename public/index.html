@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investeer - Opportunités d'Achat Spéculatif</title>
+  <!-- Google Fonts Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Scale up all text elements by at least 25% */
+    .logo-area h1 {
+      font-size: 33px;
+    }
+
+    .logo-icon {
+      font-size: 48px;
+      width: 70px;
+      height: 70px;
+    }
+
+    .subtitle {
+      font-size: 17px;
+    }
+
+    .status-indicator {
+      font-size: 19px;
+    }
+
+    .time-stats {
+      font-size: 17px;
+    }
+
+    .section-header h2 {
+      font-size: 23px;
+    }
+
+    .filter-controls {
+      font-size: 17px;
+    }
+
+    .sort-dropdown {
+      font-size: 17px;
+    }
+
+    .badge {
+      font-size: 14px;
+    }
+
+    .card-title-link {
+      font-size: 20px !important;
+    }
+
+    .card-details-list {
+      font-size: 17px;
+    }
+
+    .card-description-box {
+      font-size: 17px;
+    }
+
+    .card-client-footer {
+      font-size: 15px;
+    }
+
+    .gain-badge {
+      font-size: 14px;
+    }
+
+    .no-alerts p {
+      font-size: 20px;
+    }
+
+    .no-alerts .hint {
+      font-size: 17px;
+    }
+
+    body {
+      overflow-y: hidden;
+    }
+
+    /* Custom overrides to display the Alerts section full-width */
+    .client-grid {
+      display: block;
+      /* Disable the 2-column layout */
+      margin-top: 10px;
+    }
+
+    .alerts-section {
+      width: 100%;
+    }
+
+    .alerts-list {
+      max-height: calc(100vh - 280px);
+      min-height: 300px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      /* Exactly 1 card per line */
+      gap: 28px;
+      padding-right: 16px;
+    }
+
+    .card-title-link {
+      font-size: 20px !important;
+    }
+
+    .card-badge {
+      font-size: 14px;
+    }
+
+    .card-meta {
+      font-size: 17px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+    }
+
+    .card-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-description {
+      font-size: 17px;
+      line-height: 1.6;
+      color: #acbfd6;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 14px;
+      border-radius: var(--radius-s);
+      border-left: 2px solid var(--color-primary);
+    }
+
+    .card-description.empty {
+      color: var(--color-text-secondary);
+      font-style: italic;
+      border-left-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .card-footer {
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .filter-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    .sort-dropdown {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-s);
+      outline: none;
+      cursor: pointer;
+      font-family: var(--font-main);
+      font-size: 13px;
+      transition: all var(--transition-fast);
+    }
+
+    .sort-dropdown option {
+      background-color: #082a44;
+      /* Explicit dark background matching the panel color */
+      color: var(--color-text-main);
+      /* Explicit light text */
+    }
+
+    .sort-dropdown:focus,
+    .sort-dropdown:hover {
+      border-color: var(--color-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .gain-badge {
+      display: inline-block;
+      background-color: rgba(0, 226, 153, 0.1);
+      color: #00e699;
+      border: 1px solid rgba(0, 226, 153, 0.2);
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+
+    .perf-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+
+    .perf-badge.up {
+      background-color: rgba(0, 226, 153, 0.1);
+      color: #00e699;
+      border: 1px solid rgba(0, 226, 153, 0.2);
+    }
+
+    .perf-badge.down {
+      background-color: rgba(234, 32, 47, 0.1);
+      color: #ff4d5a;
+      border: 1px solid rgba(234, 32, 47, 0.2);
+    }
+
+    /* Gold highlight for cards with hit targets */
+    .alert-card.target-hit-card {
+      border: 1px solid rgba(255, 208, 0, 0.35) !important;
+      background: rgba(255, 208, 0, 0.02) !important;
+    }
+
+    .alert-card.target-hit-card:hover {
+      border-color: rgba(255, 208, 0, 0.6) !important;
+      box-shadow: 0 12px 40px 0 rgba(255, 208, 0, 0.1) !important;
+    }
+
+    /* Sliding golden shimmer text effect */
+    .shimmer-gold-text {
+      background: linear-gradient(90deg, #ffd000 0%, #fff3b0 50%, #ffd000 100%);
+      background-size: 200% 100%;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: shine-gold 3s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes shine-gold {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Lucide icons premium styling */
+    .icon-inline {
+      width: 1.15em;
+      height: 1.15em;
+      vertical-align: -0.15em;
+      margin-right: 8px;
+      display: inline-block;
+    }
+
+    .logo-icon {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 48px;
+      height: 48px;
+      color: var(--color-primary);
+    }
+
+    .no-alerts-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .no-alerts-icon svg {
+      width: 64px;
+      height: 64px;
+      color: var(--color-text-secondary);
+      opacity: 0.3;
+    }
+
+    /* Premium coloring for custom Lucide icons */
+    [data-lucide="target"] {
+      color: #ff4d5a;
+    }
+
+    [data-lucide="coins"] {
+      color: #ffb703;
+    }
+
+    [data-lucide="calendar"] {
+      color: #1b74b3;
+    }
+
+    [data-lucide="building-2"] {
+      color: #acbfd6;
+    }
+
+    [data-lucide="trending-up"] {
+      color: #00e699;
+    }
+
+    [data-lucide="award"] {
+      color: #ffb703;
+    }
+
+    .email-status svg {
+      width: 1.25em;
+      height: 1.25em;
+      vertical-align: -0.2em;
+      margin-right: 6px;
+    }
+
+    /* Header action navigation button */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      margin: 0 16px;
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text-primary) !important;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-m);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(0, 226, 153, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .header-btn svg {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 1100px) {
+      .card-body {
+        gap: 16px;
+      }
+
+      .card-left {
+        padding-right: 16px;
+      }
+    }
+
+    @media (max-width: 950px) {
+      .alerts-list {
+        grid-template-columns: 1fr;
+      }
+
+      .card-body {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .card-left {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass-bg"></div>
+
+  <div class="app-container">
+    <!-- Header (Identical to base page) -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon"><i data-lucide="line-chart"></i></div>
+        <div>
+          <h1>Investeer</h1>
+          <p class="subtitle">Sélection de Conseils d'Achat Spéculatif</p>
+        </div>
+      </div>
+
+      <!-- Navigation Actions -->
+      <div class="header-actions">
+
+      </div>
+
+      <!-- Status Box -->
+      <div class="status-box glass-panel">
+        <div class="status-indicator">
+          <span class="pulse-dot" id="status-dot"></span>
+          <span id="status-text">Initialisation...</span>
+        </div>
+        <div class="time-stats">
+          <div>Dernier Scan : <span id="last-scan-time">-</span></div>
+          <div>Prochain Scan : <span id="next-scan-time">-</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid (Overridden to full width) -->
+    <main class="client-grid">
+      <!-- Matched Alerts -->
+      <section class="glass-panel alerts-section">
+        <div class="section-header">
+          <h2 style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            Alertes "Achat Spéculatif" Envoyées
+            <span id="roi-badge" class="badge"
+              style="background: rgba(0, 226, 153, 0.15); color: #00e699; border: 1px solid rgba(0, 226, 153, 0.3); font-size: 16px; padding: 4px 10px; border-radius: var(--radius-s); display: none; align-items: center; gap: 6px;"></span>
+          </h2>
+          <div class="filter-controls">
+            <label for="range-select"><i data-lucide="calendar-days" class="icon-inline"
+                style="margin-right: 4px; vertical-align: middle;"></i> Période :</label>
+            <select id="range-select" class="sort-dropdown" style="margin-right: 12px;">
+              <option value="7">Derniers 7 jours</option>
+              <option value="30">Derniers 30 jours</option>
+              <option value="365">Dernier 1 an</option>
+              <option value="all">Tous les temps</option>
+            </select>
+
+            <label for="sort-select"><i data-lucide="sliders-horizontal" class="icon-inline"
+                style="margin-right: 4px; vertical-align: middle;"></i> Trier par :</label>
+            <select id="sort-select" class="sort-dropdown">
+              <option value="date-desc">Plus récent</option>
+              <option value="date-asc">Plus ancien</option>
+              <option value="gain-desc">Plus gros gain cible</option>
+              <option value="gain-asc">Plus faible gain cible</option>
+            </select>
+            <span class="badge" id="matches-badge">0 alertes</span>
+          </div>
+        </div>
+
+        <div class="alerts-list" id="alerts-list">
+          <div class="no-alerts">
+            <div class="no-alerts-icon"><i data-lucide="search"></i></div>
+            <p>Aucune alerte détectée pour le moment.</p>
+            <span class="hint">Les opportunités d'achat spéculatif apparaîtront ici dès leur publication.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Format ISO string into a human readable Paris time
+    function formatTime(isoString) {
+      if (!isoString) return 'Jamais';
+      const date = new Date(isoString);
+      return date.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Europe/Paris'
+      });
+    }
+
+    // Fetch dashboard stats
+    async function updateStatus() {
+      try {
+        const res = await fetch('/api/status');
+        if (!res.ok) throw new Error('Failed to fetch status');
+
+        const data = await res.json();
+
+        if (data.isScraping) {
+          document.getElementById('status-text').innerText = 'Scan en cours...';
+          document.getElementById('status-dot').className = 'pulse-dot running';
+        } else {
+          document.getElementById('status-text').innerText = 'En veille';
+          document.getElementById('status-dot').className = 'pulse-dot';
+        }
+
+        document.getElementById('last-scan-time').innerText = formatTime(data.lastRunTime);
+        document.getElementById('next-scan-time').innerText = formatTime(data.nextRunTime);
+
+        totalMatchesCount = data.matchesCount || 0;
+        updateBadgeText();
+
+      } catch (err) {
+        console.error('Error fetching status:', err);
+        document.getElementById('status-text').innerText = 'Erreur serveur';
+        document.getElementById('status-dot').className = 'pulse-dot idle';
+      }
+    }
+
+    let allPosts = [];
+    let previousPostsJson = '';
+    let totalMatchesCount = 0;
+    let displayedMatchesCount = 0;
+
+    function updateBadgeText() {
+      const badge = document.getElementById('matches-badge');
+      if (badge) {
+        badge.innerText = `${displayedMatchesCount} / ${totalMatchesCount} alerte${totalMatchesCount > 1 ? 's' : ''}`;
+      }
+    }
+
+    // Fetch and render matched posts
+    async function updatePosts() {
+      try {
+        const res = await fetch('/api/posts');
+        if (!res.ok) throw new Error('Failed to fetch posts');
+
+        const posts = await res.json();
+        const postsJson = JSON.stringify(posts);
+
+        if (postsJson !== previousPostsJson) {
+          previousPostsJson = postsJson;
+          allPosts = posts;
+          renderPosts();
+        }
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+      }
+    }
+
+    function renderPosts() {
+      const alertsList = document.getElementById('alerts-list');
+      const sortValue = document.getElementById('sort-select').value;
+      const rangeValue = document.getElementById('range-select').value;
+
+      // Filter posts by date range
+      let filteredByDate = allPosts;
+      if (rangeValue !== 'all') {
+        const limitDays = parseInt(rangeValue);
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - limitDays);
+        filteredByDate = allPosts.filter(post => {
+          return new Date(post.publicationDate) >= cutoffDate;
+        });
+      }
+
+      // Deduplicate posts by ID
+      const uniquePosts = [];
+      const seenIds = new Set();
+      filteredByDate.forEach(post => {
+        if (!seenIds.has(post.id)) {
+          seenIds.add(post.id);
+          uniquePosts.push(post);
+        }
+      });
+
+      if (uniquePosts.length === 0) {
+        alertsList.innerHTML = `
+          <div class="no-alerts">
+            <div class="no-alerts-icon"><i data-lucide="search"></i></div>
+            <p>Aucune alerte détectée pour le moment.</p>
+            <span class="hint">Les opportunités d'achat spéculatif apparaîtront ici dès leur publication.</span>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      // Pre-calculate gain percentages
+      const postsWithGain = uniquePosts.map(post => {
+        let gain = null;
+        if (post.price && post.targetPrice) {
+          const rawGain = ((post.targetPrice - post.price) / post.price) * 100;
+          gain = Math.round(rawGain * 10) / 10;
+        }
+        return {
+          ...post,
+          gainPercent: gain
+        };
+      });
+
+      // Apply sorting logic
+      postsWithGain.sort((a, b) => {
+        if (sortValue === 'date-desc') {
+          return new Date(b.publicationDate) - new Date(a.publicationDate);
+        } else if (sortValue === 'date-asc') {
+          return new Date(a.publicationDate) - new Date(b.publicationDate);
+        } else if (sortValue === 'gain-desc') {
+          const gainA = a.gainPercent !== null ? a.gainPercent : -9999;
+          const gainB = b.gainPercent !== null ? b.gainPercent : -9999;
+          return gainB - gainA;
+        } else if (sortValue === 'gain-asc') {
+          const gainA = a.gainPercent !== null ? a.gainPercent : 9999;
+          const gainB = b.gainPercent !== null ? b.gainPercent : 9999;
+          return gainA - gainB;
+        }
+        return 0;
+      });
+
+      let html = '';
+      postsWithGain.forEach(post => {
+        const pubDate = new Date(post.publicationDate).toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'Europe/Paris'
+        });
+
+        const emailStatusHtml = post.emailSent
+          ? '<span class="email-status success"><i data-lucide="check-circle" class="icon-inline"></i> Mail envoyé</span>'
+          : `<span class="email-status warning" title="${post.emailError || 'SMTP non configuré'}"><i data-lucide="alert-circle" class="icon-inline"></i> Loggé (SMTP off)</span>`;
+
+        const gainBadgeHtml = post.gainPercent !== null
+          ? `<span class="gain-badge">+${post.gainPercent}%</span>`
+          : '';
+
+        // Calculate performance from initial price to current price
+        let perfBadgeHtml = '';
+        if (post.currentPrice && post.price) {
+          const rawPerf = ((post.currentPrice - post.price) / post.price) * 100;
+          const perf = Math.round(rawPerf * 10) / 10;
+          const perfClass = perf >= 0 ? 'up' : 'down';
+          const perfSign = perf >= 0 ? '+' : '';
+          perfBadgeHtml = `<span class="perf-badge ${perfClass}" style="margin-left: 8px;">${perfSign}${perf}%</span>`;
+        }
+
+        // Format target hit date
+        let hitDateHtml = '';
+        if (post.targetHitDate) {
+          const hitDate = new Date(post.targetHitDate).toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+          hitDateHtml = `
+            <div class="target-hit-line" style="margin-top: 14px; display: inline-flex; align-items: center; gap: 8px;">
+              <i data-lucide="award" class="icon-inline" style="width: 20px; height: 20px; color: #ffd000; flex-shrink: 0; margin-right: 0;"></i>
+              <span class="shimmer-gold-text" style="font-size: 16px; font-weight: 600;">Cible atteinte le : ${hitDate}</span>
+            </div>
+          `;
+        }
+
+        // Format ticker and company name
+        const tickerSuffix = post.mic === 'XPAR' || post.mic === 'ALXP' ? '.PA' : post.mic === 'XBRU' ? '.BR' : post.mic === 'XAMS' ? '.AS' : '';
+        const fullTicker = post.symbol ? (post.symbol + tickerSuffix) : 'Inconnu';
+        const displayCompanyName = post.companyName || post.symbol || 'Inconnu';
+
+        const cardClass = post.targetHitDate ? 'alert-card target-hit-card' : 'alert-card';
+
+        html += `
+          <div class="${cardClass}">
+            <div class="card-header">
+              <a href="${post.url}" target="_blank" class="card-title-link">${post.title}</a>
+            </div>
+            <div class="card-meta">
+              <span><i data-lucide="building-2" class="icon-inline"></i> Valeur : <strong>${displayCompanyName} (${fullTicker})</strong></span>
+              <span><i data-lucide="calendar" class="icon-inline"></i> Publié : <strong>${pubDate}</strong></span>
+              ${post.price ? `<span><i data-lucide="coins" class="icon-inline"></i> Cours initial : <strong>${post.price} ${post.currency}</strong></span>` : ''}
+              ${post.targetPrice ? `<span><i data-lucide="target" class="icon-inline"></i> Cible : <strong>${post.targetPrice} ${post.currency}</strong>${gainBadgeHtml}</span>` : ''}
+              ${post.currentPrice ? `<span><i data-lucide="trending-up" class="icon-inline"></i> Cours actuel : <strong>${post.currentPrice} ${post.currency}</strong>${perfBadgeHtml}</span>` : ''}
+            </div>
+            ${hitDateHtml}
+            ${post.description ? `<div class="card-description" style="margin-top: 14px;">${post.description}</div>` : '<div class="card-description empty" style="margin-top: 14px;">Aucune description fournie.</div>'}
+            <div class="card-footer" style="justify-content: flex-end;">
+              ${emailStatusHtml}
+            </div>
+          </div>
+        `;
+      });
+
+      alertsList.innerHTML = html;
+
+      // Calculate average ROI on uniquePosts
+      let totalPerf = 0;
+      let countPerf = 0;
+      uniquePosts.forEach(post => {
+        if (!post.price) return;
+
+        let perf = null;
+        if (post.targetHitDate && post.targetPrice) {
+          // If target is hit, use target performance
+          perf = ((post.targetPrice - post.price) / post.price) * 100;
+        } else if (post.currentPrice) {
+          // Otherwise use current price performance
+          perf = ((post.currentPrice - post.price) / post.price) * 100;
+        }
+
+        if (perf !== null) {
+          totalPerf += perf;
+          countPerf++;
+        }
+      });
+
+      const avgRoi = countPerf > 0 ? (totalPerf / countPerf) : 0;
+      const formattedRoi = (avgRoi >= 0 ? '+' : '') + avgRoi.toFixed(1) + '%';
+
+      // Render ROI badge
+      const roiBadge = document.getElementById('roi-badge');
+      if (roiBadge) {
+        if (countPerf === 0) {
+          roiBadge.style.display = 'none';
+        } else {
+          roiBadge.style.display = 'inline-flex';
+          const isPositive = avgRoi >= 0;
+          roiBadge.style.background = isPositive ? 'rgba(0, 226, 153, 0.15)' : 'rgba(234, 32, 47, 0.15)';
+          roiBadge.style.color = isPositive ? '#00e699' : '#ff4d5a';
+          roiBadge.style.borderColor = isPositive ? 'rgba(0, 226, 153, 0.3)' : 'rgba(234, 32, 47, 0.3)';
+
+          roiBadge.innerHTML = `
+            <i data-lucide="${isPositive ? 'trending-up' : 'trending-down'}" class="icon-inline" style="width: 16px; height: 16px; margin-right: 0;"></i> 
+            ROI : ${formattedRoi}
+          `;
+        }
+      }
+
+      lucide.createIcons();
+
+      displayedMatchesCount = uniquePosts.length;
+      updateBadgeText();
+    }
+
+    // Trigger sorting updates on select change
+    document.getElementById('sort-select').addEventListener('change', renderPosts);
+    document.getElementById('range-select').addEventListener('change', renderPosts);
+
+    // Initial load
+    updateStatus();
+    updatePosts();
+    lucide.createIcons();
+
+    // Live polling intervals (every 3 seconds)
+    setInterval(() => {
+      updateStatus();
+      updatePosts();
+    }, 3000);
+  </script>
+</body>
+
+</html>
