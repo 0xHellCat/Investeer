@@ -233,6 +233,16 @@
     .alerts-list {
       max-height: 480px !important;
     }
+
+    /* Blur input fields in the configuration modal to hide details, unblur on focus */
+    #config-modal input:not([type="checkbox"]) {
+      filter: blur(6px);
+      transition: filter 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    #config-modal input:not([type="checkbox"]):focus {
+      filter: none;
+    }
   </style>
 </head>
 

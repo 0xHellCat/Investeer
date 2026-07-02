@@ -5,6 +5,7 @@ const Scraper = require('./src/scraper');
 const Emailer = require('./src/emailer');
 
 require('dotenv').config();
+require('./src/crypto-helper').decryptEnv();
 
 // Ensure database and logs folders exist
 const dbDir = path.join(__dirname, 'database');

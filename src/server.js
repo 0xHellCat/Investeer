@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
+const { encrypt, decryptEnv } = require('./crypto-helper');
+decryptEnv();
 
 // Parse cookie helper
 function getCookie(req, name) {
@@ -186,7 +188,7 @@ class Server {
       if (match) {
         const key = match[1].trim();
         if (envVars.hasOwnProperty(key)) {
-          newLines.push(`${key}=${envVars[key]}`);
+          newLines.push(`${key}=${encrypt(envVars[key])}`);
           updatedKeys.add(key);
         } else {
           newLines.push(line);
@@ -198,7 +200,7 @@ class Server {
 
     for (const key of Object.keys(envVars)) {
       if (!updatedKeys.has(key)) {
-        newLines.push(`${key}=${envVars[key]}`);
+        newLines.push(`${key}=${encrypt(envVars[key])}`);
       }
     }
 
