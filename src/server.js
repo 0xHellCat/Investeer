@@ -589,8 +589,9 @@ class Server {
 
   // Start server listening
   start(port = 3010) {
-    this.app.listen(port, '127.0.0.1', () => {
-      this.log(`Dashboard web interface running at http://127.0.0.1:${port} (local access only)`);
+    const host = process.env.HOST || '127.0.0.1';
+    this.app.listen(port, host, () => {
+      this.log(`Dashboard web interface running at http://${host}:${port}`);
     });
     
     // Run an initial check on start if we are within running hours and it's a weekday

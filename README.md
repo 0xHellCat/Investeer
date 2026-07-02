@@ -28,13 +28,21 @@ Il inclut un **Dashboard Web Local** interactif et esthétique pour consulter le
 
 ## 🛠️ Installation
 
+### 1. Récupérer le projet
+
+Clonez le dépôt et accédez au dossier :
+```bash
+git clone https://github.com/0xHellCat/Investeer.git
+cd Investeer
+```
+
 ### Option 1 : Installation Locale (Node.js)
 
 #### Prérequis
 *   **Node.js** (version 18 ou supérieure recommandée)
 
 #### Configuration
-1. Ouvrez un terminal dans le dossier du projet :
+1. Installez les dépendances :
    ```bash
    npm install
    ```
@@ -74,6 +82,8 @@ Cette méthode est la plus simple car elle embarque toutes les dépendances néc
    ```
 
 *Note : Les dossiers `database` (pour stocker la session et l'historique) et `logs` sont montés automatiquement en volume pour conserver les données persistantes même si le conteneur est recréé.*
+
+Une fois le conteneur démarré, vous pouvez accéder au Dashboard à l'adresse [http://localhost:3010](http://localhost:3010) (et la configuration locale sur [http://localhost:3010/config.html](http://localhost:3010/config.html)). Le serveur utilise en interne `HOST=0.0.0.0` pour être accessible depuis le conteneur Docker, tout en restant par défaut sur `127.0.0.1` en installation locale classique pour des raisons de sécurité.
 
 ---
 

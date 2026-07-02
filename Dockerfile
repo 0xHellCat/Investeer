@@ -4,6 +4,7 @@ FROM node:20-slim
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3010
+ENV HOST=0.0.0.0
 
 # Install system utilities needed for Playwright's browser installer
 RUN apt-get update && apt-get install -y \
