@@ -19,6 +19,40 @@ function getCookie(req, name) {
   return list[name];
 }
 
+// Check if IP is private/local (RFC 1918 & link-local)
+function isPrivateIp(ip) {
+  if (!ip) return false;
+  let cleanIp = ip;
+  if (ip.startsWith('::ffff:')) {
+    cleanIp = ip.substring(7);
+  }
+  if (cleanIp === '127.0.0.1' || cleanIp === '::1') return true;
+
+  const parts = cleanIp.split('.').map(Number);
+  if (parts.length === 4 && !parts.some(isNaN)) {
+    const [a, b, c, d] = parts;
+    if (a === 10) return true;
+    if (a === 172 && (b >= 16 && b <= 31)) return true;
+    if (a === 192 && b === 168) return true;
+  }
+
+  if (cleanIp.startsWith('fe80:') || cleanIp.startsWith('fc00:') || cleanIp.startsWith('fd00:')) {
+    return true;
+  }
+
+  return false;
+}
+
+// Middleware to block non-local/public IP addresses
+function localOnlyMiddleware(req, res, next) {
+  const clientIp = req.ip || req.socket.remoteAddress || '';
+  if (!isPrivateIp(clientIp)) {
+    console.log(`[Security] Blocked external access attempt from public IP: ${clientIp}`);
+    return res.status(403).send('Forbidden: External access is restricted to the local network only.');
+  }
+  next();
+}
+
 // Custom page/session authentication middleware
 function authMiddleware(req, res, next) {
   const isDashboard = req.path === '/' || req.path === '/index.html';
@@ -85,6 +119,7 @@ class Server {
     this.nextRunTime = null;
     this.app = express();
     this.app.use(express.json());
+    this.app.use(localOnlyMiddleware);
     this.app.use(authMiddleware);
     this.app.use(express.static(path.join(this.workspaceDir, 'public')));
     
