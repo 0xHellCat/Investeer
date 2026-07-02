@@ -69,9 +69,9 @@ Cette méthode est la plus simple car elle embarque toutes les dépendances néc
    ```bash
    docker compose up -d
    ```
-   *Note de sécurité (Linux)* : Pour des raisons de sécurité, le conteneur tourne avec l'utilisateur non-root `node` (UID 1000). Si vous rencontrez une erreur de droit d'accès (`EACCES: permission denied`), corrigez la propriété des dossiers montés sur l'hôte en exécutant :
+   *Note de sécurité (Linux)* : Pour des raisons de sécurité, le conteneur tourne avec l'utilisateur non-root `node` (UID 1000). Si vous rencontrez une erreur de droit d'accès (`EACCES: permission denied`), corrigez la propriété des dossiers et fichiers montés sur l'hôte en exécutant :
    ```bash
-   sudo chown -R 1000:1000 database logs
+   sudo chown -R 1000:1000 database logs .env
    ```
 
 3. **Consulter les logs** :

@@ -61,6 +61,42 @@ function localOnlyMiddleware(req, res, next) {
   next();
 }
 
+// Helper to create a Date object representing a specific local time in Europe/Paris timezone
+function createParisDate(year, month, day, hour, minute, second = 0) {
+  const tempDate = new Date(Date.UTC(year, month, day, hour, minute, second));
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Paris',
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: 'numeric', minute: 'numeric', second: 'numeric',
+    hour12: false
+  });
+  
+  const parts = formatter.formatToParts(tempDate);
+  const getPart = name => parseInt(parts.find(p => p.type === name).value);
+  
+  let hr = getPart('hour');
+  if (hr === 24) hr = 0;
+  
+  const formattedUtc = Date.UTC(
+    getPart('year'),
+    getPart('month') - 1,
+    getPart('day'),
+    hr,
+    getPart('minute'),
+    getPart('second')
+  );
+  
+  const diffMs = formattedUtc - tempDate.getTime();
+  return new Date(tempDate.getTime() - diffMs);
+}
+
+// Helper to get the Paris day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+function getParisDayOfWeek(date) {
+  const dayStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Paris', weekday: 'short' }).format(date);
+  const map = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6 };
+  return map[dayStr];
+}
+
 // Custom page/session authentication middleware
 function authMiddleware(req, res, next) {
   const isDashboard = req.path === '/' || req.path === '/index.html';
@@ -240,11 +276,34 @@ class Server {
     };
   }
 
+  // Helper to convert any Date object to Paris date parts
+  getParisTimeForDate(date) {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Paris',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false
+    });
+    const parts = formatter.formatToParts(date);
+    const getPart = name => parseInt(parts.find(p => p.type === name).value);
+    return {
+      year: getPart('year'),
+      month: getPart('month') - 1, // JS Month is 0-indexed
+      day: getPart('day'),
+      hour: getPart('hour'),
+      minute: getPart('minute')
+    };
+  }
+
   // Helper to check if current Paris time is within Paris trading hours (Weekdays 9h to 17h30)
   isParisTradingHours() {
     const pt = this.getParisTime();
-    const parisDate = new Date(pt.year, pt.month, pt.day, pt.hour, pt.minute, 0);
-    const day = parisDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const parisDate = createParisDate(pt.year, pt.month, pt.day, pt.hour, pt.minute, 0);
+    const day = getParisDayOfWeek(parisDate); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
     // Weekdays check (Monday = 1, ..., Friday = 5)
     if (day < 1 || day > 5) return false;
@@ -260,21 +319,21 @@ class Server {
   // Calculate next run time based on user requirements
   calculateNextRunTime() {
     const pt = this.getParisTime();
-    const currentParisDate = new Date(pt.year, pt.month, pt.day, pt.hour, pt.minute, 0);
+    const currentParisDate = createParisDate(pt.year, pt.month, pt.day, pt.hour, pt.minute, 0);
     
     // Weekend check (Saturday = 6, Sunday = 0)
-    const dayOfWeek = currentParisDate.getDay();
+    const dayOfWeek = getParisDayOfWeek(currentParisDate);
     if (dayOfWeek === 6 || dayOfWeek === 0) {
       const daysToAdd = dayOfWeek === 6 ? 2 : 1;
-      const nextMonday = new Date(pt.year, pt.month, pt.day + daysToAdd, 8, 3, 0);
-      const dateStr = nextMonday.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+      const nextMonday = createParisDate(pt.year, pt.month, pt.day + daysToAdd, 8, 3, 0);
+      const dateStr = nextMonday.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Paris' });
       this.log(`Week-end détecté. Prochain scan planifié pour le ${dateStr} à 08h03 CET.`);
       return nextMonday;
     }
 
-    const run1Today = new Date(pt.year, pt.month, pt.day, 8, 3, 0);
-    const run2Today = new Date(pt.year, pt.month, pt.day, 8, 40, 0);
-    const endToday = new Date(pt.year, pt.month, pt.day, 19, 0, 0);
+    const run1Today = createParisDate(pt.year, pt.month, pt.day, 8, 3, 0);
+    const run2Today = createParisDate(pt.year, pt.month, pt.day, 8, 40, 0);
+    const endToday = createParisDate(pt.year, pt.month, pt.day, 19, 0, 0);
     
     let nextRun;
 
@@ -293,27 +352,29 @@ class Server {
       
       // If the randomized next run crosses 19h00, push to tomorrow 8h03
       if (nextRun > endToday) {
-        const tomorrow = new Date(pt.year, pt.month, pt.day + 1, 8, 3, 0);
+        const tomorrow = createParisDate(pt.year, pt.month, pt.day + 1, 8, 3, 0);
         nextRun = tomorrow;
         this.log(`Random interval crossed 19h00. Next run scheduled for tomorrow at 08h03 CET.`);
       } else {
-        const timeStr = nextRun.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const timeStr = nextRun.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' });
         this.log(`Next run scheduled for today at ${timeStr} CET (interval of ${intervalMinutes} minutes).`);
       }
     } else {
       // After 19h00: next is 8h03 tomorrow
-      const tomorrow = new Date(pt.year, pt.month, pt.day + 1, 8, 3, 0);
+      const tomorrow = createParisDate(pt.year, pt.month, pt.day + 1, 8, 3, 0);
       nextRun = tomorrow;
       this.log(`Current time is past 19h00. Next run scheduled for tomorrow at 08h03 CET.`);
     }
 
     // Verify if nextRun lands on a weekend, if so, defer to Monday 8h03
-    const nextRunDay = nextRun.getDay();
+    const nextRunDay = getParisDayOfWeek(nextRun);
     if (nextRunDay === 6) { // Saturday
-      nextRun = new Date(nextRun.getFullYear(), nextRun.getMonth(), nextRun.getDate() + 2, 8, 3, 0);
+      const ptNext = this.getParisTimeForDate(nextRun);
+      nextRun = createParisDate(ptNext.year, ptNext.month, ptNext.day + 2, 8, 3, 0);
       this.log(`Next run target landed on Saturday. Deferred to Monday at 08h03 CET.`);
     } else if (nextRunDay === 0) { // Sunday
-      nextRun = new Date(nextRun.getFullYear(), nextRun.getMonth(), nextRun.getDate() + 1, 8, 3, 0);
+      const ptNext = this.getParisTimeForDate(nextRun);
+      nextRun = createParisDate(ptNext.year, ptNext.month, ptNext.day + 1, 8, 3, 0);
       this.log(`Next run target landed on Sunday. Deferred to Monday at 08h03 CET.`);
     }
 
@@ -340,10 +401,10 @@ class Server {
     if (this.isScraping || !this.nextRunTime) return;
 
     const pt = this.getParisTime();
-    const currentParisDate = new Date(pt.year, pt.month, pt.day, pt.hour, pt.minute, 0);
+    const currentParisDate = createParisDate(pt.year, pt.month, pt.day, pt.hour, pt.minute, 0);
 
     if (currentParisDate >= this.nextRunTime) {
-      this.log(`Scheduled time reached (${this.nextRunTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}). Starting automatic check...`);
+      this.log(`Scheduled time reached (${this.nextRunTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' })}). Starting automatic check...`);
       await this.triggerScrape();
     }
   }
