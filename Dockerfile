@@ -31,8 +31,8 @@ COPY . .
 # Create database and logs directories, and adjust ownership to Node user
 RUN mkdir -p database logs && chown -R node:node /app
 
-# Run the app as a non-privileged user for security
-USER node
+# Run the app as root (necessary to avoid host/container volume mount permission issues with database/logs)
+# USER node
 
 # Expose the API and Dashboard port
 EXPOSE 3010
