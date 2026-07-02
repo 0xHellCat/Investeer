@@ -528,13 +528,19 @@ class Server {
         timezone: config.timezone || 'Europe/Paris'
       };
 
-      // Mask password for safety
+      // Mask sensitive values for safety
+      const maskVal = (val) => val ? '••••••••' : '';
       const safeConfig = {
         ...mergedConfig,
-        investirPassword: mergedConfig.investirPassword ? '********' : '',
+        investirUsername: maskVal(mergedConfig.investirUsername),
+        investirPassword: maskVal(mergedConfig.investirPassword),
+        emailRecipient: maskVal(mergedConfig.emailRecipient),
         smtp: {
           ...mergedConfig.smtp,
-          pass: mergedConfig.smtp.pass ? '********' : ''
+          host: maskVal(mergedConfig.smtp.host),
+          user: maskVal(mergedConfig.smtp.user),
+          pass: maskVal(mergedConfig.smtp.pass),
+          from: maskVal(mergedConfig.smtp.from)
         }
       };
       res.json(safeConfig);
@@ -561,27 +567,24 @@ class Server {
 
       const submitted = req.body;
 
-      // Handle masked passwords
-      let newInvestirPass = submitted.investirPassword;
-      if (newInvestirPass === '********') {
-        newInvestirPass = currentMerged.investirPassword;
-      }
-      let newSmtpPass = submitted.smtp?.pass || '';
-      if (newSmtpPass === '********') {
-        newSmtpPass = currentMerged.smtp.pass;
-      }
+      const resolveValue = (submittedVal, currentVal) => {
+        if (submittedVal === undefined || submittedVal === null || submittedVal === '' || submittedVal === '••••••••' || submittedVal === '********') {
+          return currentVal;
+        }
+        return String(submittedVal);
+      };
 
       // 1. Save sensitive data to .env
       const envVars = {
-        INVESTIR_USERNAME: submitted.investirUsername || '',
-        INVESTIR_PASSWORD: newInvestirPass || '',
-        EMAIL_RECIPIENT: submitted.emailRecipient || '',
-        SMTP_HOST: submitted.smtp?.host || '',
-        SMTP_PORT: submitted.smtp?.port || '587',
-        SMTP_SECURE: submitted.smtp?.secure !== undefined ? String(submitted.smtp.secure) : 'false',
-        SMTP_USER: submitted.smtp?.user || '',
-        SMTP_PASS: newSmtpPass || '',
-        SMTP_FROM: submitted.smtp?.from || ''
+        INVESTIR_USERNAME: resolveValue(submitted.investirUsername, currentMerged.investirUsername),
+        INVESTIR_PASSWORD: resolveValue(submitted.investirPassword, currentMerged.investirPassword),
+        EMAIL_RECIPIENT: resolveValue(submitted.emailRecipient, currentMerged.emailRecipient),
+        SMTP_HOST: resolveValue(submitted.smtp?.host, currentMerged.smtp.host),
+        SMTP_PORT: submitted.smtp?.port !== undefined ? String(submitted.smtp.port) : String(currentMerged.smtp.port),
+        SMTP_SECURE: submitted.smtp?.secure !== undefined ? String(submitted.smtp.secure) : String(currentMerged.smtp.secure),
+        SMTP_USER: resolveValue(submitted.smtp?.user, currentMerged.smtp.user),
+        SMTP_PASS: resolveValue(submitted.smtp?.pass, currentMerged.smtp.pass),
+        SMTP_FROM: resolveValue(submitted.smtp?.from, currentMerged.smtp.from)
       };
       this.saveEnvConfig(envVars);
 

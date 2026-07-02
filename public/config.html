@@ -444,6 +444,25 @@
         }, 1000);
       });
     }
+
+    // Clear input fields in the modal on focus if they contain masks, restore on blur if empty
+    const modalInputs = document.querySelectorAll('#config-modal input:not([type="checkbox"])');
+    modalInputs.forEach(input => {
+      let originalMaskedValue = '';
+
+      input.addEventListener('focus', () => {
+        if (input.value === '••••••••' || input.value === '********') {
+          originalMaskedValue = input.value;
+          input.value = '';
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        if (input.value === '' && originalMaskedValue) {
+          input.value = originalMaskedValue;
+        }
+      });
+    });
   </script>
 </body>
 
