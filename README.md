@@ -28,16 +28,52 @@ Il inclut un **Dashboard Web Local** interactif et esthétique pour consulter le
 
 ## 🛠️ Installation
 
-### Prérequis
+### Option 1 : Installation Locale (Node.js)
+
+#### Prérequis
 *   **Node.js** (version 18 ou supérieure recommandée)
 
-### Configuration
+#### Configuration
 1. Ouvrez un terminal dans le dossier du projet :
    ```bash
    npm install
    ```
 2. Les identifiants Investir sont déjà pré-configurés dans `config.json`.
 3. Lancez l'application (voir ci-dessous).
+
+### Option 2 : Installation avec Docker (Recommandé)
+
+Cette méthode est la plus simple car elle embarque toutes les dépendances nécessaires (notamment pour Playwright/Chromium) dans un conteneur isolé.
+
+#### Prérequis
+*   **Docker** et **Docker Compose** installés.
+
+#### Configuration et Lancement
+1. **Créer le fichier d'environnement** :
+   Copiez le fichier d'exemple et configurez-le :
+   ```bash
+   cp .env.example .env
+   ```
+   Éditez ensuite le fichier `.env` pour y renseigner vos identifiants, mots de passe et paramètres SMTP.
+
+2. **Lancer l'application** :
+   Démarrez les services en arrière-plan (mode détaché) :
+   ```bash
+   docker compose up -d
+   ```
+
+3. **Consulter les logs** :
+   Pour suivre l'exécution en temps réel :
+   ```bash
+   docker compose logs -f
+   ```
+
+4. **Arrêter l'application** :
+   ```bash
+   docker compose down
+   ```
+
+*Note : Les dossiers `database` (pour stocker la session et l'historique) et `logs` sont montés automatiquement en volume pour conserver les données persistantes même si le conteneur est recréé.*
 
 ---
 
