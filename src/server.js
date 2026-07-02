@@ -43,12 +43,18 @@ function isPrivateIp(ip) {
   return false;
 }
 
-// Middleware to block non-local/public IP addresses
+// Middleware to block non-local/public IP addresses for config pages & APIs
 function localOnlyMiddleware(req, res, next) {
-  const clientIp = req.ip || req.socket.remoteAddress || '';
-  if (!isPrivateIp(clientIp)) {
-    console.log(`[Security] Blocked external access attempt from public IP: ${clientIp}`);
-    return res.status(403).send('Forbidden: External access is restricted to the local network only.');
+  const isConfig = req.path === '/config.html';
+  const configEndpoints = ['/api/config', '/api/trigger', '/api/test-email', '/api/logs'];
+  const isConfigEndpoint = configEndpoints.some(p => req.path.startsWith(p));
+
+  if (isConfig || isConfigEndpoint) {
+    const clientIp = req.ip || req.socket.remoteAddress || '';
+    if (!isPrivateIp(clientIp)) {
+      console.log(`[Security] Blocked external config access attempt from public IP: ${clientIp}`);
+      return res.status(403).send('Forbidden: Configuration is restricted to the local network only.');
+    }
   }
   next();
 }
