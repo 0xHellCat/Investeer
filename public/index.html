@@ -383,6 +383,85 @@
         padding-bottom: 16px;
       }
     }
+
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto !important;
+      }
+      
+      .app-container {
+        padding: 15px 10px !important;
+      }
+
+      .app-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px !important;
+      }
+
+      .logo-area {
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+      }
+
+      .status-box {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center;
+        gap: 10px !important;
+        width: 100%;
+      }
+
+      .time-stats {
+        border-left: none !important;
+        padding-left: 0 !important;
+        align-items: center;
+      }
+
+      .section-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px !important;
+      }
+
+      .filter-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        width: 100%;
+      }
+
+      .sort-dropdown {
+        width: 100% !important;
+      }
+
+      .alerts-list {
+        max-height: none !important;
+        overflow-y: visible !important;
+        padding-right: 0 !important;
+        gap: 15px !important;
+      }
+
+      .alert-card {
+        padding: 15px !important;
+      }
+
+      .card-meta {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+
+      .card-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+
+      .card-badge {
+        align-self: flex-start;
+      }
+    }
   </style>
 </head>
 
