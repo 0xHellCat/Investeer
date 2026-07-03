@@ -5,6 +5,7 @@ FROM node:20-slim
 ENV NODE_ENV=production
 ENV PORT=3010
 ENV HOST=0.0.0.0
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 # Install system utilities needed for Playwright's browser installer
 RUN apt-get update && apt-get install -y \
@@ -20,16 +21,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Install Playwright Chromium browser and its native system dependencies
-RUN npx playwright install chromium --with-deps
+RUN mkdir -p /ms-playwright && npx playwright install chromium --with-deps
 
 # Copy the rest of the application files
 COPY . .
 
 # Create database and logs directories, and adjust ownership to Node user
-RUN mkdir -p database logs && chown -R node:node /app
+RUN mkdir -p database logs && chown -R node:node /app /ms-playwright
 
 # Run the app as a non-privileged user for security
 USER node
